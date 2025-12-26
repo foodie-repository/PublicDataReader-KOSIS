@@ -2,22 +2,25 @@
 
 ## 프로젝트 소개
 
-KB 부동산 데이터와 공공데이터포털의 아파트 실거래가 정보를 수집하고 분석하는 도구입니다.
+KB 부동산 데이터, KOSIS 통계 데이터, 공공데이터포털의 아파트 실거래가 정보를 수집하고 분석하는 도구입니다.
 
 ## 주요 기능
 
 - **KB 부동산 데이터 수집**: KB 전세가율 등 부동산 시장 데이터 수집
+- **KOSIS 주택 착공 실적 수집**: 국토교통부의 주택유형별 주택건설 착공실적 데이터 수집 (2011년~현재)
 - **아파트 실거래가 수집**: 공공데이터포털 API를 통한 전국 아파트 매매 실거래가 데이터 수집
 - **Google Sheets 연동**: 수집된 데이터를 Google Sheets에 자동으로 저장 및 업데이트
-- **데이터 시각화**: PyGWalker를 사용한 인터랙티브 데이터 분석 및 시각화
+- **데이터 시각화**: Plotly 및 PyGWalker를 사용한 인터랙티브 데이터 분석 및 시각화
 
 ## 기술 스택
 
 - Python 3.11+
 - pandas: 데이터 분석 및 처리
-- PublicDataReader: 공공데이터 및 KB 부동산 데이터 수집
+- PublicDataReader: 공공데이터 및 KB 부동산, KOSIS 데이터 수집
 - gspread: Google Sheets API 연동
 - pygwalker: 인터랙티브 데이터 시각화
+- plotly: 동적 차트 및 그래프 시각화
+- matplotlib, seaborn: 정적 차트 및 그래프 시각화
 - Jupyter: 노트북 기반 분석 환경
 
 ## 설치 방법
@@ -85,22 +88,53 @@ MONTHS_TO_FETCH=202506,202507
 
 ### 4. 실행
 
+#### KOSIS 주택 착공 실적 수집
+
+```bash
+# Python 스크립트로 실행 (데이터 수집 및 CSV 저장)
+uv run python PublicData/착공.py
+
+# 또는 Jupyter 노트북으로 실행 (시각화 포함)
+uv run jupyter notebook PublicData/착공.ipynb
+```
+
+**수집 데이터:**
+
+- 기간: 2011년 1월 ~ 현재 (월별 데이터)
+- 지역: 전국 17개 시도
+- 주택유형: 아파트, 단독, 다가구, 연립, 다세대
+
+**생성되는 파일:**
+
+- `착공실적_시도별_YYYYMMDD.csv`: 원본 데이터 (Long format)
+- `착공실적_피벗_전체기간_최종.csv`: 분석용 피벗 데이터
+
+**시각화 (착공.ipynb):**
+
+- 전국 주택유형별 착공 실적 추이 (아파트 vs 비아파트)
+- 시도별 착공 실적 비교 (최근 1년, 누적 막대 그래프)
+- 특정 시도의 주택유형별 추이 (사용자 입력)
+- 주택유형별 시도 비교 (최근 1년)
+
 #### 아파트 실거래가 수집
 
 ```bash
 # main.py에서 MONTHS_TO_FETCH 수정 후 실행
-python main.py
+uv run python main.py
 ```
 
 #### Jupyter 노트북 실행
 
 ```bash
-jupyter notebook
+uv run jupyter notebook
 ```
 
 노트북 파일:
-- `KB.ipynb`: KB 전세가율 데이터 수집 및 분석
-- `KB부동산.ipynb`: KB 부동산 관련 데이터 분석
+
+- **KB/**
+  - `KB_전세가율.ipynb`: KB 전세가율 데이터 수집 및 분석
+- **PublicData/**
+  - `착공.ipynb`: KOSIS 주택 착공 실적 데이터 수집 및 시각화
 - `Buy.ipynb`: 아파트 매매 데이터 분석
 - `분양권+입주권.ipynb`: 분양권 및 입주권 데이터 분석
 
@@ -108,15 +142,26 @@ jupyter notebook
 
 ```
 PublicDataReader/
-├── main.py                # 아파트 실거래가 수집 메인 스크립트
-├── KB.ipynb              # KB 전세가율 분석 노트북
-├── KB부동산.ipynb         # KB 부동산 분석 노트북
-├── Buy.ipynb             # 아파트 매매 분석 노트북
-├── 분양권+입주권.ipynb     # 분양권/입주권 분석 노트북
-├── lawd_code.csv         # 법정동 코드 데이터
-├── credentials.json      # Google API 인증 파일 (git 제외)
-├── pyproject.toml        # 프로젝트 설정 및 의존성
-└── README.md             # 프로젝트 문서
+├── main.py                       # 아파트 실거래가 수집 메인 스크립트
+├── KB/                          # KB 부동산 데이터 수집
+│   ├── KB_전세가율.ipynb          # KB 전세가율 분석 노트북
+│   └── KB_전세가율.py             # KB 전세가율 수집 스크립트
+├── PublicData/                  # 공공데이터 수집
+│   ├── 착공.ipynb                # KOSIS 착공 실적 시각화 노트북
+│   ├── 착공.py                   # KOSIS 착공 실적 수집 스크립트
+│   ├── 착공실적_시도별_YYYYMMDD.csv  # 수집된 원본 데이터
+│   └── 착공실적_피벗_전체기간_최종.csv # 분석용 피벗 데이터
+├── Data/                        # 수집된 데이터 파일
+│   └── KB_전세가율.csv
+├── Archive/                     # 아카이브 파일
+│   └── 착공_Sample.ipynb
+├── Buy.ipynb                    # 아파트 매매 분석 노트북
+├── 분양권+입주권.ipynb             # 분양권/입주권 분석 노트북
+├── lawd_code.csv                # 법정동 코드 데이터
+├── credentials.json             # Google API 인증 파일 (git 제외)
+├── pyproject.toml               # 프로젝트 설정 및 의존성
+├── uv.lock                      # uv 의존성 잠금 파일
+└── README.md                    # 프로젝트 문서
 ```
 
 ## uv 주요 명령어
@@ -139,6 +184,16 @@ uv run jupyter notebook
 ```
 
 ## 데이터 수집 흐름
+
+### KOSIS 주택 착공 실적
+
+1. **KOSIS API 초기화**: PublicDataReader의 Kosis 클래스 사용
+2. **데이터 수집**: 2011년~현재까지 전국 17개 시도별 월별 착공 실적 수집
+3. **데이터 전처리**: 소계/기타/총계 제외, 시도명 정식 명칭으로 변환
+4. **CSV 저장**: 원본 데이터 및 피벗 테이블 형식으로 저장
+5. **시각화**: Plotly를 사용한 인터랙티브 차트 생성
+
+### 아파트 실거래가
 
 1. **법정동 코드 로드**: `lawd_code.csv`에서 전국 법정동 코드 읽기
 2. **API 호출**: 각 지역별, 월별로 아파트 실거래가 데이터 수집
@@ -166,4 +221,6 @@ uv run jupyter notebook
 - [PublicDataReader 문서](https://github.com/WooilJeong/PublicDataReader)
 - [uv 공식 문서](https://docs.astral.sh/uv/)
 - [공공데이터포털](https://www.data.go.kr/)
+- [KOSIS 국가통계포털](https://kosis.kr/)
 - [KB 부동산 통계](https://onland.kbstar.com/)
+- [Plotly Python 문서](https://plotly.com/python/)
