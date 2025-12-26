@@ -1,0 +1,36 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Credentials and sensitive data
+credentials.json
+*.json.bak
+
+# API keys and configuration
+.env
+.env.local
+
+# Data files (optional - uncomment if you don't want to track data files)
+# *.csv
+# *.xlsx
+
+# PyGWalker visualization files
+viz-code.json
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
