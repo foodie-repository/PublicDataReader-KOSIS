@@ -13,6 +13,10 @@ KOSIS 주택 착공 실적 데이터 수집 스크립트
 from PublicDataReader import Kosis
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
+
+# 프로젝트 루트의 csv 폴더 경로
+CSV_DIR = Path(__file__).parent.parent / "csv"
 
 
 def collect_construction_data():
@@ -156,10 +160,13 @@ def save_to_csv(df, filename=None):
         current_date = datetime.now().strftime("%Y%m%d")
         filename = f"착공실적_시도별_{current_date}.csv"
 
+    # csv 폴더에 저장
+    filepath = CSV_DIR / filename
+
     try:
         # CSV 파일로 저장 (한글 깨짐 방지를 위해 utf-8-sig 인코딩 사용)
-        df.to_csv(filename, index=False, encoding='utf-8-sig')
-        print(f"데이터가 '{filename}' 파일로 저장되었습니다.")
+        df.to_csv(filepath, index=False, encoding='utf-8-sig')
+        print(f"데이터가 '{filepath}' 파일로 저장되었습니다.")
 
     except Exception as e:
         print(f"파일 저장 중 오류 발생: {str(e)}")
@@ -250,9 +257,12 @@ def create_final_pivot_table(df, filename=None):
         if filename is None:
             filename = "착공실적_피벗_전체기간_최종.csv"
 
+        # csv 폴더에 저장
+        filepath = CSV_DIR / filename
+
         # CSV로 저장
-        df_long.to_csv(filename, index=False, encoding='utf-8-sig')
-        print(f"최종 피벗 테이블이 '{filename}' 파일로 저장되었습니다.")
+        df_long.to_csv(filepath, index=False, encoding='utf-8-sig')
+        print(f"최종 피벗 테이블이 '{filepath}' 파일로 저장되었습니다.")
         print(f"- 총 {len(df_long)}개 행 ({len(df_long['시점'].unique())}개 시점 x {len(df_long['시도'].unique())}개 시도 x {len(df_long['주택유형'].unique())}개 주택유형)")
 
         return df_long
